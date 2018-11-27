@@ -1,6 +1,6 @@
-//---------------------------------------------------------------------------------------START codeStream
+//---------------------------------------------------------------------------------------START codeStream 
 
-        type            fixedValue;
+	type            fixedValue;
         value           #codeStream
         {
             codeInclude	//files needed for automatic compilation
@@ -14,7 +14,8 @@
                 -I$(LIB_SRC)/meshTools/lnInclude \
             #};
 
-     	    codeLibs	//libs needed to visualize BC in paraview
+ 
+    	    codeLibs	//libs needed to visualize BC in paraview
     	    #{
         		-lmeshTools \
         		-lfiniteVolume
@@ -31,34 +32,23 @@
                 const label id = mesh.boundary().findPatchID("in");
                 const fvPatch& patch = mesh.boundary()[id];
 
-                scalarField W(patch.size(), 0);
+                vectorField U(patch.size(), vector(0, 0, 0));
 
                 //const scalar pi = constant::mathematical::pi;	
-                const scalar A = -114.58;
-                const scalar B = 412.5;
-                const scalar C = 542.29;
-                const scalar D = 307.88;
-                const scalar E = -62.766;	
+                //const scalar a  	= 	1;
+                const scalar s = 0.5;
 
-                forAll(W, i)
+                forAll(U, i)
                 {
-                    //const scalar x = patch.Cf()[i][0];
+                    const scalar x = patch.Cf()[i][0];
                     const scalar y = patch.Cf()[i][1];
                     const scalar z = patch.Cf()[i][2];
-			
-                    if (y <= 0.8)
-                    {
-                    	W[i]=scalar(0);
-                    }
-                    else
-                    {
-                    	W[i] = scalar(A*pow(y,4) + B*pow(y,3) + C*pow(y,2) + D*y + E); 
-                    }
+
+                    U[i] = vector(pow(z/s, 2) + pow((y-s)/s,2) - 1.0, 0, 0);
                 }
 
-                W.writeEntry("", os);
+                U.writeEntry("", os);
             #};
         };
-
-//---------------------------------------------------------------------------------------END codeStream 
-
+	
+//---------------------------------------------------------------------------------------END codeStream

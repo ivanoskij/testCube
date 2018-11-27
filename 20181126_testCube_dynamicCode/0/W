@@ -1,9 +1,9 @@
 /*--------------------------------*- C++ -*----------------------------------*\
-| =========                 |                                                 |
-| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  5.x                                   |
-|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
-|    \\/     M anipulation  |                                                 |
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  dev
+     \\/     M anipulation  |
 \*---------------------------------------------------------------------------*/
 FoamFile
 {
@@ -17,28 +17,25 @@ FoamFile
 
 dimensions      [0 0 0 0 0 0 0];
 
-//--------------------------------------------------------------------------------------- 
-//#include "codeStream/internalFieldW"; 
-internalField   uniform 0; 	//set it off if using codeStream
-//--------------------------------------------------------------------------------------- 
+internalField   uniform 0;
 
 boundaryField
 {
     in
     {
-	//#include "codeStream/boundaryFieldW";
-
-        type            fixedValue;	//set it off if using codeStream
-        value           uniform 0;	//set it off if using codeStream
-    }
-    out
-    {
-        type            zeroGradient;
+	#include "codeStream/boundaryFieldW";
+        //type            fixedValue;
+        //value           uniform 0;
     }
     shell
     {
         type            zeroGradient;
     }
+    out
+    {
+        type            zeroGradient;
+    }
 }
+
 
 // ************************************************************************* //

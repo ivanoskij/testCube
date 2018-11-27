@@ -14,10 +14,10 @@ FoamFile
     object      fvOptions;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-/*
+
 sourceW_fvOPT
 {
-    type            scalarCodedSource;	
+    type            scalarSemiImplicitSource;	
     active          true;
     timeStart       0;
     duration        1;
@@ -30,7 +30,7 @@ sourceW_fvOPT
 	 W (1 0);	//two coefficients needed (<scalarValue> <0>)
 	}
 }
-*/
+
 ///////////////////////////////////////////////////////////////////////////////
 /*
 sourceW_fvOPT
@@ -39,14 +39,15 @@ sourceW_fvOPT
 type  		scalarCodedSource;
 active  	true;
 name   		sourceW;
-timeStart       0.5;
+timeStart       0;
 duration        1;
 volumeMode      absolute;
+
 
 scalarCodedSourceCoeffs
 {
 selectionMode   cellSet;
-cellSet      	cubeW;
+cellSet      	sourceWset;
 fields      	(W);
 
         codeInclude
@@ -54,42 +55,68 @@ fields      	(W);
 		#include "fvCFD.H"
         #};
 
-        codeCorrect
-        #{
+	codeOptions	
+	#{
+	#};
 
+	codeCorrect
+        #{
         #};
 
-        codeAddSup
+	codeAddSup
         #{
-		const IOdictionary& d = static_cast<const IOdictionary&>(dict);
-		const fvMesh& mesh = refCast<const fvMesh>(d.db());
-		scalarField W(mesh.nCells(), 0.);
-		forAll(W, i)
-		{
-		const scalar x = mesh.C()[i][0];
-		const scalar y = mesh.C()[i][1];
+	const IOdictionary& d = static_cast<const IOdictionary&>(dict_);
 
-			if (y >= -0.05*cos(2*constant::mathematical::pi*x))
-			{
-				W[i] = 1.;
-			}
-		}
-		W.writeEntry("", os);
+	const fvMesh& mesh = refCast<const fvMesh>(d.db());
+            const label id = mesh.cellSet().findcellSetID("sourceW");
+            //const fvPatch& sellCet = mesh.cellSet()[id];
+	const volScalarField& W = d.db().objectRegistry::lookupObject<volScalarField> ("W");
+	//const volScalarField& W =mesh().lookupObject("W");
+        //const scalarField& Cf = mesh.Cf();
+           //  const fvPatch& patch = mesh.boundary()[id];
+            // const polyMesh& mesh=mesh.()
+            //scalarField field(patch.nCells(), 0);
+
+	cellSet test(mesh, sourceW);
+
+	forAll(mesh.C(), id)
+	{
+    		if  (test[id])
+    		{
+           	//- Only get the cells which are included in the cellSet 
+    		}
+	}
+
+	//const volVectorField& Cf = mesh.Cf(); 	// Get Mesh Coordinates of all Cells as Vector
+	//vector Cs = Cf[sensorCell[i]];   		// Loop only over cellSet
+	//scalar x = Cs.component(0); 		//Coordinate Components x,y,z of sensorCellSet
+	//scalar y = Cs.component(1);
+	//scalar z = Cs.component(2);
+
+        const scalar s = 0.5;
+            forAll(W, i)
+            {
+		const scalar x = mesh.Cf()[i][0];
+		const scalar y = mesh.Cf()[i][1];
+		const scalar z = mesh.Cf()[i][2];
+
+		W[i] = scalar(pow(z/s, 2) + pow((y-s)/s,2) - 1.0*x);
+            }
         #};
 
         codeSetValue
         #{
-
         #};
 
         code
         #{
             $codeInclude
             $codeCorrect
+            $codeOptions
             $codeAddSup
             $codeSetValue
         #};
 
 }
-*/
+/*
 // ************************************************************************* //

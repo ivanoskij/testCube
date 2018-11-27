@@ -1,0 +1,62 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  dev
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      setFieldsDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+defaultFieldValues
+(
+    volScalarFieldValue W 0
+);
+
+regions
+(
+
+    boxToCell
+    {
+	box (0 0.1 0.5) (1 1.2 0.6);
+
+        fieldValues
+        (
+            //volScalarFieldValue W 1;
+		#codeStream
+		{
+			codeOptions
+			#{
+				-I$WM_PROJECT_DIR/src/finiteVolume/fields/volFields\
+				-I$HOME/Documents
+			#};
+
+			codeInclude
+			#{
+				#include "fvCFD.H"
+			#};
+			code
+			#{
+				scalarField W(mesh.nCells(), 0.);
+				forAll(W, i)
+                		{
+                		const scalar x = patch.Cf()[i][0];
+                    		const scalar y = patch.Cf()[i][1];
+                    		const scalar z = patch.Cf()[i][2];
+
+                    		W[i] = scalar(pow(z/s, 2) + pow((y-s)/s,2) - 1.0*x);
+                		}
+			#};
+		}
+
+        );
+    }
+);
+
+// ************************************************************************* //
