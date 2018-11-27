@@ -1,0 +1,95 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  5                                     |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      fvOptions;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+/*
+sourceW_fvOPT
+{
+    type            scalarCodedSource;	
+    active          true;
+    timeStart       0;
+    duration        1;
+    selectionMode   cellSet; 	//OPTIONS: 'all', 'cellSet', 'cellZone', 'points'
+    cellSet         sourceWset;
+    fields 	    (W);
+    volumeMode      absolute;	//OPTIONS: 'absolute' (scalar units, e.g. [kg]), 'specific' (salar units, e.g. [kg/m3])
+    injectionRateSuSp 
+	{
+	 W (1 0);	//two coefficients needed (<scalarValue> <0>)
+	}
+}
+*/
+///////////////////////////////////////////////////////////////////////////////
+/*
+sourceW_fvOPT
+{
+
+type  		scalarCodedSource;
+active  	true;
+name   		sourceW;
+timeStart       0.5;
+duration        1;
+volumeMode      absolute;
+
+scalarCodedSourceCoeffs
+{
+selectionMode   cellSet;
+cellSet      	cubeW;
+fields      	(W);
+
+        codeInclude
+        #{
+		#include "fvCFD.H"
+        #};
+
+        codeCorrect
+        #{
+
+        #};
+
+        codeAddSup
+        #{
+		const IOdictionary& d = static_cast<const IOdictionary&>(dict);
+		const fvMesh& mesh = refCast<const fvMesh>(d.db());
+		scalarField W(mesh.nCells(), 0.);
+		forAll(W, i)
+		{
+		const scalar x = mesh.C()[i][0];
+		const scalar y = mesh.C()[i][1];
+
+			if (y >= -0.05*cos(2*constant::mathematical::pi*x))
+			{
+				W[i] = 1.;
+			}
+		}
+		W.writeEntry("", os);
+        #};
+
+        codeSetValue
+        #{
+
+        #};
+
+        code
+        #{
+            $codeInclude
+            $codeCorrect
+            $codeAddSup
+            $codeSetValue
+        #};
+
+}
+*/
+// ************************************************************************* //

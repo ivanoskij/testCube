@@ -1,0 +1,144 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  5                                     |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+//windTunnel3D 
+
+///////////////////////////////////////////////////////////////////////////////////
+
+actions
+(
+ {
+   name		sourceW0;
+   type		cellSet;
+   action	new;
+   source	cylinderToCell;
+
+   sourceInfo
+    {
+	p1 (3.3 0.9 1.05); p2 (3.4 0.9 1.05); radius 0.2;
+    }
+ }
+ {
+   name		sourceW1;
+   type		cellSet;
+   action	new;
+   source	cylinderToCell;
+
+   sourceInfo
+    {
+	p1 (3.3 1.3 1.05); p2 (3.4 1.3 1.05); radius 0.2;
+    }
+ }
+ {
+   name		sourceW2;
+   type		cellSet;
+   action	new;
+   source	cylinderToCell;
+
+   sourceInfo
+    {
+	p1 (3.3 1.7 1.05); p2 (3.4 1.7 1.05); radius 0.2;
+    }
+ }
+ {
+   name		sourceW3;
+   type		cellSet;
+   action	new;
+   source	cylinderToCell;
+
+   sourceInfo
+    {
+	p1 (3.3 2.1 1.05); p2 (3.4 2.1 1.05); radius 0.2;
+    }
+ }
+
+//convert previous cellSet to a cellZone 
+ {
+   name		sourceWset0;
+   type		cellZoneSet;
+   action	new;
+   source	setToCellZone;
+
+  sourceInfo
+    {
+	 set sourceW0;
+    }
+ }
+ {
+   name		sourceWset1;
+   type		cellZoneSet;
+   action	new;
+   source	setToCellZone;
+
+  sourceInfo
+    {
+	 set sourceW1;
+    }
+ }
+ {
+   name		sourceWset2;
+   type		cellZoneSet;
+   action	new;
+   source	setToCellZone;
+
+  sourceInfo
+    {
+	 set sourceW2;
+    }
+ }
+ {
+   name		sourceWset3;
+   type		cellZoneSet;
+   action	new;
+   source	setToCellZone;
+
+  sourceInfo
+    {
+	 set sourceW3;
+    }
+ }
+);
+
+
+///////////////////////////////////////////////////////////////////////////////////
+
+//actions
+//(
+// {
+//    name 	inletW;
+//    type 	surfaceToCell;
+//    action 	new;
+  
+//    source surfaceToCell;
+//    sourceInfo
+//    {
+//        //file            "www.avl.com-geometry.stl";
+//        outsidePoints   ((-99 -99 -59));    // definition of outside
+//        includeCut      false;              // cells cut by surface
+//        includeInside   false;              // cells not on outside of surf
+//       includeOutside  false;              // cells on outside of surf
+//        nearDistance    -1;                 // cells with centre near surf
+                                            // (set to -1 if not used)
+//        curvature       0.9;                // cells within nearDistance
+                                            // and near surf curvature
+                                            // (set to -100 if not used)
+//    }
+// }
+//);
+
+
+// ************************************************************************* //

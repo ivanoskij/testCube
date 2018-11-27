@@ -1,0 +1,37 @@
+# Wavefront OBJ file written 2018-08-21T18:06:11
+o volume_edgeMesh
+
+# points : 12
+# lines  : 14
+
+# <points count="12">
+v 0 0 1
+v 0 1 1
+v 0 1 0
+v 0 0 0
+v 1 0 1
+v 1 0 0
+v 1 1 1
+v 1 1 0
+v 0.5 0.5 0.25
+v 0.531333 0.5 0.251971
+v 0.531333 0.5 0.748029
+v 0.5 0.5 0.75
+# </points>
+
+# <edges count="14">
+l 1 2
+l 2 3
+l 4 1
+l 3 4
+l 4 6
+l 6 5
+l 5 1
+l 7 2
+l 5 7
+l 8 3
+l 7 8
+l 8 6
+l 9 10
+l 11 12
+# </edges>

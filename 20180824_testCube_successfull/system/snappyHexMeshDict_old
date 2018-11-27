@@ -1,0 +1,217 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      snappyHexMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+//windTunnel3
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Which of the steps to run
+
+castellatedMesh true;	// make basic mesh 
+snap            true;	// decide to snap back to surface
+addLayers       true;	// decide to add sub layers
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+geometry 	//general meshing // Load in STL files here //file name {type of surface; definitive name of the surface}
+{
+	inlet.stl {type triSurfaceMesh; name inlet;} 		
+	outlet.stl {type triSurfaceMesh; name outlet;}
+	boom.stl {type triSurfaceMesh; name boom;}
+	sideWall.stl {type triSurfaceMesh; name sideWall;}
+	bottomWall.stl {type triSurfaceMesh; name bottomWall;}
+	upperWall.stl {type triSurfaceMesh; name upperWall;}
+	volume.stl {type triSurfaceMesh; name volume;}
+
+	//refinementBox {type searchableBox; min (7 0.5 0.5); max (10 2.5 1.5);} //zone where we want to apply the refinement//min max --> dimension of geometrical entity
+};
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+castellatedMeshControls //edge refinement//
+{
+    maxLocalCells 100000000;	//max cells per CPU core
+    maxGlobalCells 200000000;	//max cells to use before mesh deletion step
+    minRefinementCells 10;	//zero means no bad cells are allowed during refinement stages// if minRefinementCells ≥ number of cells to be refined, surface refinement stops
+    maxLoadUnbalance 0.1;	//Maximum processor imbalance during refinement where a value of 0 represents a perfect balance 
+    nCellsBetweenLevels 3;	//number of buffer layers of cells between successive levels of refinement //typically set to 3//
+    resolveFeatureAngle 30;	//applies maximum level of refinement to cells in intersections whose angle exceeds resolveFeatureAngle // low value for sharp edges// typically set to 30//
+
+
+    // Explicit feature edge refinement
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    features // taken from STL from each .eMesh file created by "SurfaceFeatureExtract" command //
+    (
+        {file "inlet.eMesh"; level 1;} 		// first digit --> global surface refinement // second digit --> curvature refinement level //
+        {file "outlet.eMesh"; level 1;} 
+        {file "boom.eMesh"; level 2;} 
+        {file "sideWall.eMesh"; level 2;} 
+        {file "bottomWall.eMesh"; level 2;} 
+        {file "upperWall.eMesh"; level 2;}
+
+    );
+
+    // Surface based refinement
+    // ~~~~~~~~~~~~~~~~~~~~~~~~
+
+    refinementSurfaces // Surface-wise min and max refinement level //0 --> very coarse // 6 --> very refined//first digit --> min//second digit --> max
+    {
+	inlet {level (0 1);}
+        outlet {level (0 1);}
+	boom {level (2 3);} 
+	sideWall {level (1 2);} 
+	bottomWall {level (1 2);} 
+	upperWall {level (1 2);} 
+ 
+    }  
+
+    // curvature and edge refinement
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+    refinementRegions        		// In descending levels of fine-ness
+    {
+     volume				//name of overall domain surface					
+	{
+		mode distance; 		//type of refinement// distance --> distance from surface//
+		levels 
+		( 	
+			(0.3 1) 	// first digit --> distance from surface // second digit --> level of refinement
+			//(0.6 1)	// if more levels of refinement are added, distances must be in ascending order and levels in descending order
+			//(0.3 1)
+			//(0.5 0)
+		);					
+	}	
+
+	/*
+      refinementBox 			// name of the region created in geometry 	
+	{
+		mode inside; 		//type of refinement// inside --> inside the volume region//
+		levels 
+		(
+			(1.0 1)		// first digit --> 1.0 to ignore entry // second digit --> level of refinement
+		);	
+	}				
+	 */
+     }
+	
+    // mesh location
+    // ~~~~~~~~~~~~~~~~~~~~~~~~
+
+    locationInMesh (8 1.5 1);  		//The material point indicates where we want to create the mesh,that is, inside or outside the body to be meshed
+    allowFreeStandingZoneFaces true; 	//true --> default//
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Settings for the snapping
+
+snapControls
+{
+    nSmoothPatch 3; 		//Number of patch smoothing iterations before finding correspondence to surface//
+    tolerance 4.0;		//Ratio of distance for points to be attracted by surface feature point or edge, to local maximum edge length
+    nSolveIter 30;		//Number of mesh displacement relaxation itarations //The higher the value the better the body fitted mesh // 30 --> default // 300 --> high fitting//
+    nRelaxIter 5;		//Maximum number of snapping relaxation iterations// Should stop before upon reaching a correct mesh//
+    nFeatureSnapIter 15; 	//Number of feature edge snapping iterations //increase to improve the quality of the edge features// 10 --> default//
+    implicitFeatureSnap false;  //Detect (geometric only) features by sampling the surface// false --> default//
+
+// New settings from openfoam 2.2 onwards for SHMesh
+
+    implicitFeatureSnap false; 		// detects without doing surfaceFeatureExtract// false --> default//
+    explicitFeatureSnap true;		// Use castellatedMeshControls features //true --> default//
+    multiRegionFeatureSnap false; 	// detects features between multiple surfaces// false --> default//
+
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Settings for the layer addition //recommended for viscous layers//
+
+addLayersControls 			//add the PATCH names from inside the STL file so STLpatchName_insideSTLName 
+{
+    relativeSizes false; 		//false--> thickness of layers is the same all over the domain
+    expansionRatio 1.2;			// around 1.2
+    finalLayerThickness 0.25; 		//thickness of the last layer before inner mesh
+    minThickness 0.005; 		//min thickness of the layer
+    nGrow 1; 				//number of layers of connected faces that are not grown if points do not get extruded// helps convergence of layer addition close to features 
+
+    layers				// number of layers from stl surface to inner mesh
+    {
+	boom {nSurfaceLayers 4;} 		
+	sideWall {nSurfaceLayers 3;} 		
+	bottomWall {nSurfaceLayers 3;} 		
+	upperWall {nSurfaceLayers 3;} 		
+    }
+
+    // Advanced settings
+
+    featureAngle 80; 			// When not to extrude surface// 0 --> flat surface// 90 --> right angle
+    nRelaxIter 3;  			// Number of snapping relaxation iteration
+    nSmoothSurfaceNormals 1;  		// Number of smoothing iterations of surface normals
+    nSmoothNormals 3; 			// Number of smoothing iterations of interior mesh movement direction
+
+    nSmoothThickness 10;  		// Smooth layer thickness over surface patches
+    maxFaceThicknessRatio 0.5; 		// Stop layer growth on highly warped cells
+    maxThicknessToMedialRatio 0.3; 	// Reduce layer growth where ratio thickness to medial distance is large
+
+    minMedianAxisAngle 130;  		// Angle used to pick up medial axis points
+    nBufferCellsNoExtrude 0;   		// Create buffer region for new layer terminations
+    nLayerIter 50; 			// Overall max number of layer addition iterations
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Generic mesh quality settings
+
+meshQualityControls
+{
+    maxNonOrtho 60;		//max angle of the vector between the two adjacent cell centres across the common face and the face normal//180 --> disabled//65 --> typically// high value high 
+				//non-orthogonality//
+    maxBoundarySkewness 2;	//Max boundary face skewness allowed// <0 --> disabled // 20 --> typically//
+    maxInternalSkewness 1;	//Max internal face skewness allowed// <0 --> disabled // 4 --> typically//
+
+    maxConcave 80;		//Max concaveness allowed//180 --> disabled // 80 --> typically//
+    minFlatness 0.5;		//Ratio of minimum projected area to actual area// -1 --> disables// 0.5 --> typically//
+    minVol 1e-13;		//Minimum pyramid volume// -1e30 --> disables// 1e-13 --> typically//
+    minTetQuality 1e-9;		//Min quality of the tetrahedron formed by the face-centre and variable base point minimum decomposition triangles and the cell centre// typically off// -1e30 --> disables//
+				// set to very negative// -1e30 --> disables
+
+    minArea -1;			//Minimum face area// < 0 -->  disabled//-1 --> typically//
+    minTwist 0.01;		//Minimum face twist// < -1 --> disabled // 0.01 --> typically//
+
+    minDeterminant 0.8;		//Minimum normalised cell determinant// 1 --> hex// ≤ 0 --> illegal cell//0.001 --> typically//
+    minFaceWeight 0.02;		//range 0-0.5
+    minVolRatio 0.01;		//range 0-1
+    minTriangleTwist -1;	// >1 for fluent compatability
+
+    // Advanced
+
+    nSmoothScale 4;		//Number of error distribution iterations
+    errorReduction 0.75;	//Amount to scale back displacement at error points 
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Advanced //this section is uncommented by default
+
+debug 0; 
+
+mergeTolerance 1e-6; // fraction of overall bounding box of initial mesh // Note: the write tolerance should be > 1e-6.
+
+
+
+// ************************************************************************* //

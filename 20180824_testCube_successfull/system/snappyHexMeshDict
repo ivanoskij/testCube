@@ -1,0 +1,159 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      snappyHexMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+//	testCube
+
+//	{must!} --> mandatory line! 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+castellatedMesh true;	//	{must!}
+snap            true;	//	{must!}
+addLayers       true;	//	{must!}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+geometry 	//	{must!}
+{
+	inlet.stl {type triSurfaceMesh; name inlet;} 		
+	outlet.stl {type triSurfaceMesh; name outlet;}
+	cube.stl {type triSurfaceMesh; name cube;}
+	sphere.stl {type triSurfaceMesh; name sphere;}
+	volume.stl {type triSurfaceMesh; name volume;}
+};
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+castellatedMeshControls			//	{must!}
+{
+
+    maxGlobalCells 200000000; 		//	{must!}
+    maxLocalCells 100000000;		//	{must!}
+    minRefinementCells 10;		//	{must!}
+    resolveFeatureAngle 30;		//	{must!}
+    nCellsBetweenLevels 2;		//	{must!}
+    locationInMesh (0.1 0.1 0.1);	//	{must!}
+    allowFreeStandingZoneFaces true;	//	{must!}
+
+    features				//	{must!}
+    (
+/*
+        {file "inlet.eMesh"; level 0;}
+        {file "outlet.eMesh"; level 0;} 
+        {file "cube.eMesh"; level 0;} 
+        {file "sphere.eMesh"; level 0;} 
+*/
+    );
+
+    refinementSurfaces 			//	{must!}
+    {
+
+	inlet {level (0 0);}
+        outlet {level (0 0);}
+	cube {level (0 0);} 
+	sphere {level (2 3);} 
+
+    }  
+
+    refinementRegions			//	{must!}
+    {
+	volume 
+	{
+	  mode distance;
+	  levels ((0.1 2)(0.2 1));
+	}
+    }
+
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+snapControls				//	{must!}
+{
+    nSmoothPatch 3;			//	{must!}
+    tolerance 4.0;			//	{must!}
+    nSolveIter 30;			//	{must!}
+    nRelaxIter 5;			//	{must!}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+addLayersControls 			//	{must!}
+{
+    relativeSizes false;		//	{must!}
+    minThickness 0.005;			//	{must!}
+    featureAngle 80;			//	{must!}
+    nGrow 1;				//	{must!}
+    maxFaceThicknessRatio 0.5;		//	{must!}
+    nBufferCellsNoExtrude 0;		//	{must!}
+    nLayerIter 50;			//	{must!}
+
+    nSmoothSurfaceNormals 1; 		//	{must!}* 
+    minMedianAxisAngle 130; 		//	{must!}*
+    nSmoothNormals 1;			//	{must!}*
+    maxThicknessToMedialRatio 0.3; 	//	{must!}*
+    nSmoothThickness 10;		//	{must!}*
+    nRelaxIter 3;			//	{must!}*
+
+    firstLayerThickness 0.005;		//	{must!}* --> see comment below
+    expansionRatio 1.2;			//	{must!}* --> see comment below
+
+    layers				//	{must!}			
+    {
+	sphere {nSurfaceLayers 3;} 	//	{must!}	
+	cube {nSurfaceLayers 2;} 	//	{must!}	 		
+    }
+}
+
+/*--------------------------------------------------------------------------------------------------/
+
+    Please specify at least one pair
+    - first layer thickness ('firstLayerThickness') and overall thickness ('thickness') 
+    - first layer thickness ('firstLayerThickness') and expansion ratio ('expansionRatio') 
+    - final layer thickness ('finalLayerThickness') and expansion ratio ('expansionRatio') 
+    - final layer thickness ('finalLayerThickness') and overall thickness ('thickness') 
+    - overall thickness ('thickness') and expansion ratio ('expansionRatio')
+
+/--------------------------------------------------------------------------------------------------*/
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+meshQualityControls			//	{must!}
+{
+    maxNonOrtho 60;			//	{must!}
+    minVol -1e-13;			//	{must!}
+    minTetQuality 1e-9;			//	{must!}
+    maxConcave 80;			//	{must!}
+    minArea -1;				//	{must!}
+    maxInternalSkewness 1;		//	{must!}
+    maxBoundarySkewness 2;		//	{must!}
+
+    minFaceWeight 0.02;			//	{must!}
+    minVolRatio 0.01;			//	{must!}
+    minTwist 0.01;			//	{must!}
+    minTriangleTwist -1;		//	{must!}
+    minDeterminant 0.01;		//	{must!}
+    errorReduction 0.75;		//	{must!}
+    nSmoothScale 4;			//	{must!}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+mergeTolerance 1e-6;			//	{must!}
+
+
+
+// ************************************************************************* //

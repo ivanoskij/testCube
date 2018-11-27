@@ -1,0 +1,51 @@
+/*--- NOTE: codeStream in internalfield works like setFields ---*/
+
+//---------------------------------------------------------------------------------------START codeStream
+
+internalField   #codeStream
+{
+            codeInclude	//files needed for automatic compilation
+            #{
+                #include "fvCFD.H"
+            #};
+
+            codeOptions	//options for compilation
+            #{
+                -I$(LIB_SRC)/finiteVolume/lnInclude \
+                -I$(LIB_SRC)/meshTools/lnInclude \
+            #};
+
+    	    codeLibs	//libs needed to visualize BC in paraview
+    	    #{
+        		-lmeshTools \
+        		-lfiniteVolume
+    	    #};
+
+    	    code	
+    	    #{
+                const IOdictionary& d = static_cast<const IOdictionary&>(dict);
+                const fvMesh& mesh = refCast<const fvMesh>(d.db());
+                scalarField W(mesh.nCells(), 0.);
+
+                scalar he = 0.5;
+                scalar ke = 0.5;
+                scalar ae = 0.3;
+                scalar be = 0.15;
+
+                forAll(W, i)
+                {
+                const scalar x = mesh.C()[i][0];
+                const scalar y = mesh.C()[i][1];
+                const scalar z = mesh.C()[i][2];
+
+               	    if ( pow(y-ke,2) <= ((1 - pow(x-he,2)/pow(ae,2) )*pow(be,2)) )
+               	    {
+                		W[i] = 1.;
+               	    }
+
+                }
+                W.writeEntry("", os);
+    	    #};
+};
+
+//---------------------------------------------------------------------------------------END codeStream 

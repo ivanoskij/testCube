@@ -1,0 +1,44 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  5.x                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      W;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 0 0 0 0 0 0];
+
+//--------------------------------------------------------------------------------------- 
+//#include "codeStream/internalFieldW"; 
+internalField   uniform 0; 	//set it off if using codeStream
+//--------------------------------------------------------------------------------------- 
+
+boundaryField
+{
+    in
+    {
+	//#include "codeStream/boundaryFieldW";
+
+        type            fixedValue;	//set it off if using codeStream
+        value           uniform 0;	//set it off if using codeStream
+    }
+    out
+    {
+        type            zeroGradient;
+    }
+    shell
+    {
+        type            zeroGradient;
+    }
+}
+
+// ************************************************************************* //

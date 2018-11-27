@@ -1,0 +1,72 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  5                                     |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      surfaceFeatureExtractDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+//windTunnel3
+
+inlet.stl
+{
+    extractionMethod    extractFromSurface; 	// extractFromFile or extractFromSurface
+    extractFromSurfaceCoeffs
+
+    {
+	includedAngle   150;			//0--> selects no edges //180--> selects all edges
+    }
+    writeObj                yes;    		// Write options
+}
+
+outlet.stl
+{
+    extractionMethod    extractFromSurface; 	
+    extractFromSurfaceCoeffs
+    {
+	includedAngle   150;			
+    }
+    writeObj                yes;    		
+}
+
+sphere.stl
+{
+    extractionMethod    extractFromSurface; 	
+    extractFromSurfaceCoeffs
+    {
+	includedAngle   150;			
+    }
+    writeObj                yes;    		
+}
+
+cube.stl
+{
+    extractionMethod    extractFromSurface; 	
+    extractFromSurfaceCoeffs
+    {
+	includedAngle   150;			
+    }
+    writeObj                yes;    		
+}
+
+volume.stl
+{
+    extractionMethod    extractFromSurface; 	
+    extractFromSurfaceCoeffs
+    {
+	includedAngle   150;			
+    }
+    writeObj                yes;    		
+
+
+
+
+// ************************************************************************* //

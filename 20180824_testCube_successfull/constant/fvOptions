@@ -1,0 +1,82 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  5                                     |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      fvOptions;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+
+//windTunnel3D
+
+sourceW_fvOPT0
+{
+    type            scalarSemiImplicitSource;	
+    active          true;
+    timeStart       1;
+    duration        3;
+    selectionMode   cellSet; 	//OPTIONS: 'all', 'cellSet', 'cellZone', 'points'
+    cellSet         sourceWset0;
+    fields 	    (W);
+    volumeMode      absolute;	//OPTIONS: 'absolute' (scalar units, e.g. [kg]), 'specific' (salar units, e.g. [kg/m3])
+    injectionRateSuSp 
+	{
+	 W (1 0);//two coefficients needed (<scalarValue> <0>)
+	}
+}
+sourceW_fvOPT1
+{
+    type            scalarSemiImplicitSource;	
+    active          true;
+    timeStart       1;
+    duration        3;
+    selectionMode   cellSet; 	//OPTIONS: 'all', 'cellSet', 'cellZone', 'points'
+    cellSet         sourceWset1;
+    fields 	    (W);
+    volumeMode      absolute;	//OPTIONS: 'absolute' (scalar units, e.g. [kg]), 'specific' (salar units, e.g. [kg/m3])
+    injectionRateSuSp 
+	{
+	 W (1 0);//two coefficients needed (<scalarValue> <0>)
+	}
+}
+sourceW_fvOPT2
+{
+    type            scalarSemiImplicitSource;	
+    active          true;
+    timeStart       1;
+    duration        3;
+    selectionMode   cellSet; 	//OPTIONS: 'all', 'cellSet', 'cellZone', 'points'
+    cellSet         sourceWset2;
+    fields 	    (W);
+    volumeMode      absolute;	//OPTIONS: 'absolute' (scalar units, e.g. [kg]), 'specific' (salar units, e.g. [kg/m3])
+    injectionRateSuSp 
+	{
+	 W (1 0);//two coefficients needed (<scalarValue> <0>)
+	}
+}
+sourceW_fvOPT3
+{
+    type            scalarSemiImplicitSource;	
+    active          true;
+    timeStart       1;
+    duration        3;
+    selectionMode   cellSet; 	//OPTIONS: 'all', 'cellSet', 'cellZone', 'points'
+    cellSet         sourceWset3;
+    fields 	    (W);
+    volumeMode      absolute;	//OPTIONS: 'absolute' (scalar units, e.g. [kg]), 'specific' (salar units, e.g. [kg/m3])
+    injectionRateSuSp 
+	{
+	 W (1 0);//two coefficients needed (<scalarValue> <0>)
+	}
+}
+
+// ************************************************************************* //

@@ -1,0 +1,25 @@
+# Wavefront OBJ file written 2018-08-21T18:06:11
+o sphere_edgeMesh
+
+# points : 6
+# lines  : 8
+
+# <points count="6">
+v 0.5 0.5 0.75
+v 0.5 0.5 0.25
+v 0.4993987 0.5003214 0.2500009
+v 0.4993987 0.5003214 0.7499991
+v 0.5217889 0.5 0.2509513
+v 0.5217889 0.5 0.7490487
+# </points>
+
+# <edges count="8">
+l 2 5
+l 6 1
+l 2 2
+l 1 1
+l 3 2
+l 2 3
+l 4 1
+l 1 4
+# </edges>
